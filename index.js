@@ -1,5 +1,6 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
+const cells = 3;
 const width = 600;
 const height = 600;
 
@@ -38,8 +39,20 @@ World.add(world, walls);
 
 // Maze generation //
 // define grid array //
-const grid = Array(3)
+const grid = Array(cells) // creates 3 inner arrays
    .fill(null)
-      .map(() => Array(3).fill(false));
+      .map(() => Array(cells).fill(false));
 // map over null array to return 3 arrays with false elements //
 console.log(grid);
+
+// create verticals array //
+const verticals = Array(cells) // creates 3 inner arrays
+   .fill(null)
+      .map(() => Array(cells - 1).fill(false));
+console.log(verticals);
+
+// create horizontals array
+const horizontals = Array(cells - 1) // creates 2 inner arrays
+   .fill(null)
+      .map(() => Array(cells).fill(false));
+console.log(horizontals);
