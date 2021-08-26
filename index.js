@@ -9,7 +9,7 @@ const render = Render.create({
    element: document.body,
    engine: engine,
    options: {
-      wireframes: false, // makes shapes random solid color
+      wireframes: true, // makes shapes random solid color
       width, // defined above
       height // defined above
    }
@@ -35,3 +35,11 @@ const walls = [
    })
 ];
 World.add(world, walls);
+
+// Maze generation //
+// define grid array //
+const grid = Array(3)
+   .fill(null)
+      .map(() => Array(3).fill(false));
+// map over null array to return 3 arrays with false elements //
+console.log(grid);
