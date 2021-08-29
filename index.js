@@ -135,7 +135,7 @@ for(let neighbor of neighbors){
 
 stepThroughCell(startRow, startColumn); // yields a random cell with two coordinates using indicies of grid array //
 
-// iterate over horizontals array with forEach() //
+// iterate over horizontals array with forEach() to get horizontal segments on the canvas //
 horizontals.forEach((row, rowIndex) => {
    row.forEach((open, columnIndex) => {
       if (open){
@@ -154,3 +154,25 @@ horizontals.forEach((row, rowIndex) => {
       World.add(world, wall);
    });
 });
+
+// iterate over verticals array with forEach() to get vertical segments or lines drawn on the canvas //
+verticals.forEach((row, rowIndex) => {
+   row.forEach((open,columnIndex) => {
+      if(open){
+         return;
+      }
+      // create wall segments //
+      const wall = Bodies.rectangle(
+         (columnIndex * unitLength + unitLength),
+         (rowIndex * unitLength + unitLength / 2),
+         10,
+         unitLength,
+         {
+            isStatic: true
+         }
+      );
+      // add the segments to the canvas //
+      World.add(world, wall);
+   });
+});
+  
