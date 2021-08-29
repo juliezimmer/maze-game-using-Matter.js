@@ -4,6 +4,9 @@ const cells = 3;
 const width = 600;
 const height = 600;
 
+// unitLength is one side of one cell //
+const unitLength = width / cells; // could also use height because width = height in this case //
+
 const engine = Engine.create();
 const { world } = engine;
 const render = Render.create({
@@ -125,8 +128,29 @@ for(let neighbor of neighbors){
       } else if(direction === 'down'){
          horizontals[row][column] = true;
       }
-   } 
-   // visit that next cell (call function again with row and column trying to visit)
+      // visit that next cell (call function again with row and column trying to visit) //
+      stepThroughCell(nextRow, nextColumn);
+   } // end of for loop //
 };
 
 stepThroughCell(startRow, startColumn); // yields a random cell with two coordinates using indicies of grid array //
+
+// iterate over horizontals array with forEach() //
+horizontals.forEach((row, rowIndex) => {
+   row.forEach((open, columnIndex) => {
+      if (open){
+         return; // don't draw any segment
+      }
+      // if element is false, a segment has to be drawn //
+      const wall = Bodies.rectangle(
+         (columnIndex * unitLength + unitLength / 2),
+         (rowIndex * unitLength + unitLength),
+         unitLength,
+         10,
+         {
+            isStatic: true
+         }
+      );
+      World.add(world, wall);
+   });
+});
