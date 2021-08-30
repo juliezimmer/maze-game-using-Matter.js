@@ -1,6 +1,6 @@
-const { Engine, Render, Runner, World, Bodies } = Matter;
+const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells = 15;
+const cells =3;
 const width = 600;
 const height = 600;
 
@@ -8,6 +8,8 @@ const height = 600;
 const unitLength = width / cells; // could also use height because width = height in this case //
 
 const engine = Engine.create();
+// disables gravity //
+engine.world.gravity.y = 0;
 const { world } = engine;
 const render = Render.create({
    element: document.body,
@@ -77,8 +79,6 @@ const horizontals = Array(cells - 1) // creates 2 inner arrays
 
 const startRow = Math.floor(Math.random() * cells);
 const startColumn = Math.floor(Math.random() * cells);
-
-console.log(startRow, startColumn);
 
 // function that iterates through maze //
 const stepThroughCell = (row, column) => {
@@ -180,6 +180,7 @@ const goal = Bodies.rectangle(
    unitLength * .7,
    unitLength * .7,
    {
+      label: 'goal',
       isStatic: true
    }
 );
@@ -190,24 +191,44 @@ World.add(world, goal);
 const ball = Bodies.circle(
    unitLength / 2,
    unitLength / 2,
-   unitLength / 4 // ball is half the width of a cell //
+   unitLength / 4, // ball is half the width of a cell //
+   {
+      label: 'ball'
+   }
 );
 // add ball to canvas
 World.add(world, ball);
 
 // detecting the ball and moving it //
 document.addEventListener('keydown', (event) => {
-   console.log(event);
+   // get ball current velocity 
+   // x and y are current ball velocity
+   const { x, y } = ball.velocity;
+   console.log(x, y);
    if(event.code === 'KeyW'){
-     console.log('move ball up');
+     Body.setVelocity(ball, { x, y: y - 5 });
    }
    if (event.code === 'KeyA'){
-      console.log('move ball right');
+      Body.setVelocity(ball, { x: x + 5, y });
    }
    if (event.code === 'KeyS'){
-      console.log('move ball down');
+      Body.setVelocity(ball, { x, y: y + 5 });
    }
    if(event.code === 'KeyD'){
-      console.log('move ball left');
+      Body.setVelocity(ball, { x: x - 5, y });
    }
 }); 
+
+// Win Condition //
+Events.on(engine, 'collisionStart', (e) => {
+   e.pairs.forEach((collision) => {
+      const labels = ['ball', 'goal'];
+
+      if (
+         labels.includes(collision.bodyA.label) && 
+         labels.includes(collision.bodyB.label)
+      )  {
+            console.log('User won!');
+      }
+   });
+});
