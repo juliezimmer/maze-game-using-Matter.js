@@ -1,6 +1,6 @@
 const { Engine, Render, Runner, World, Bodies } = Matter;
 
-const cells = 3;
+const cells = 15;
 const width = 600;
 const height = 600;
 
@@ -25,16 +25,16 @@ Runner.run(Runner.create(), engine);
 
 // Walls
 const walls = [
-   Bodies.rectangle((width / 2), 0, width, 40, {
+   Bodies.rectangle((width / 2), 0, width, 2, {
       isStatic: true
    }),
-   Bodies.rectangle((width / 2), height, width, 40, {
+   Bodies.rectangle((width / 2), height, width, 2, {
       isStatic: true
    }),
-   Bodies.rectangle(0, (height / 2), 40, height, {
+   Bodies.rectangle(0, (height / 2), 2, height, {
       isStatic: true
    }),
-   Bodies.rectangle(width, (height / 2), 40, height, {
+   Bodies.rectangle(width, (height / 2), 2, height, {
       isStatic: true
    })
 ];
@@ -63,20 +63,17 @@ const shuffle = (arr) => {
 const grid = Array(cells) // creates 3 inner arrays
    .fill(null)
       .map(() => Array(cells).fill(false));
-// map over null array to return 3 arrays with false elements //
-console.log(grid);
+// map over null array to return 3 arrays with false elements 
 
 // create verticals array //
 const verticals = Array(cells) // creates 3 inner arrays
    .fill(null)
       .map(() => Array(cells - 1).fill(false));
-console.log(verticals);
 
 // create horizontals array
 const horizontals = Array(cells - 1) // creates 2 inner arrays
    .fill(null)
       .map(() => Array(cells).fill(false));
-console.log(horizontals);
 
 const startRow = Math.floor(Math.random() * cells);
 const startColumn = Math.floor(Math.random() * cells);
@@ -175,4 +172,42 @@ verticals.forEach((row, rowIndex) => {
       World.add(world, wall);
    });
 });
-  
+
+// goal
+const goal = Bodies.rectangle(
+   (width - unitLength / 2),
+   (height - unitLength / 2),   
+   unitLength * .7,
+   unitLength * .7,
+   {
+      isStatic: true
+   }
+);
+// add to World/canvas //
+World.add(world, goal); 
+
+// ball
+const ball = Bodies.circle(
+   unitLength / 2,
+   unitLength / 2,
+   unitLength / 4 // ball is half the width of a cell //
+);
+// add ball to canvas
+World.add(world, ball);
+
+// detecting the ball and moving it //
+document.addEventListener('keydown', (event) => {
+   console.log(event);
+   if(event.code === 'KeyW'){
+     console.log('move ball up');
+   }
+   if (event.code === 'KeyA'){
+      console.log('move ball right');
+   }
+   if (event.code === 'KeyS'){
+      console.log('move ball down');
+   }
+   if(event.code === 'KeyD'){
+      console.log('move ball left');
+   }
+}); 
