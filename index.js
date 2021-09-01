@@ -1,15 +1,22 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cells =3;
-const width = 600;
-const height = 600;
+const cellsHorizontal = 14;
+const cellsVertical = 10;
 
-// unitLength is one side of one cell //
-const unitLength = width / cells; // could also use height because width = height in this case //
+// using browser window object //
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+// in X direction: width of canvas //
+const unitLengthX = width / cellsHorizontal; 
+// in Y direction: height of canvas //
+const unitLengthY = height / cellsVertical;
 
 const engine = Engine.create();
+
 // disables gravity //
 engine.world.gravity.y = 0;
+
 const { world } = engine;
 const render = Render.create({
    element: document.body,
@@ -62,23 +69,23 @@ const shuffle = (arr) => {
  };
 
 // define grid array //
-const grid = Array(cells) // creates 3 inner arrays
+const grid = Array(cellsVertical) // outer array created //
    .fill(null)
-      .map(() => Array(cells).fill(false));
-// map over null array to return 3 arrays with false elements 
+      .map(() => Array(cellsHorizontal).fill(false)); 
+// The above map statement builds out each inner array row, each with the number of elements of columns in the grid // 
 
 // create verticals array //
-const verticals = Array(cells) // creates 3 inner arrays
+const verticals = Array(cellsVertical) // creates 3 inner arrays
    .fill(null)
-      .map(() => Array(cells - 1).fill(false));
+      .map(() => Array(cellsHorizontal - 1).fill(false));
 
 // create horizontals array
-const horizontals = Array(cells - 1) // creates 2 inner arrays
+const horizontals = Array(cellsVertical - 1) // creates 2 inner arrays
    .fill(null)
-      .map(() => Array(cells).fill(false));
+      .map(() => Array(cellsHorizontal).fill(false));
 
-const startRow = Math.floor(Math.random() * cells);
-const startColumn = Math.floor(Math.random() * cells);
+const startRow = Math.floor(Math.random() * cellsVertical);
+const startColumn = Math.floor(Math.random() * cellsHorizontal);
 
 // function that iterates through maze //
 const stepThroughCell = (row, column) => {
@@ -104,9 +111,9 @@ for(let neighbor of neighbors){
       // See if neighbor is out of bounds //
       if (
          nextRow < 0 || 
-         nextRow >= cells || 
+         nextRow >= cellsVertical || 
          nextColumn < 0 || 
-         nextColumn >= cells
+         nextColumn >= cellsHorizontal
       ){
         continue;    
       }
@@ -140,11 +147,12 @@ horizontals.forEach((row, rowIndex) => {
       }
       // if element is false, a segment has to be drawn //
       const wall = Bodies.rectangle(
-         (columnIndex * unitLength + unitLength / 2),
-         (rowIndex * unitLength + unitLength),
-         unitLength,
-         10,
+         (columnIndex * unitLengthX + unitLengthX / 2),
+         (rowIndex * unitLengthY + unitLengthY),
+         unitLengthX,
+         5,
          {
+            label: 'wall',
             isStatic: true
          }
       );
@@ -160,11 +168,12 @@ verticals.forEach((row, rowIndex) => {
       }
       // create wall segments //
       const wall = Bodies.rectangle(
-         (columnIndex * unitLength + unitLength),
-         (rowIndex * unitLength + unitLength / 2),
-         10,
-         unitLength,
+         (columnIndex * unitLengthX + unitLengthX),
+         (rowIndex * unitLengthY + unitLengthY / 2),
+         5,
+         unitLengthY,
          {
+            label: 'wall', 
             isStatic: true
          }
       );
@@ -175,10 +184,10 @@ verticals.forEach((row, rowIndex) => {
 
 // goal
 const goal = Bodies.rectangle(
-   (width - unitLength / 2),
-   (height - unitLength / 2),   
-   unitLength * .7,
-   unitLength * .7,
+   (width - unitLengthX / 2),
+   (height - unitLengthY / 2),   
+   unitLengthX * .7,
+   unitLengthY * .7,
    {
       label: 'goal',
       isStatic: true
@@ -188,10 +197,12 @@ const goal = Bodies.rectangle(
 World.add(world, goal); 
 
 // ball
+// ballRadius finds the smaller unitLength between X and Y //
+const ballRadius = Math.min(unitLengthX, unitLengthY) / 4;
 const ball = Bodies.circle(
-   unitLength / 2,
-   unitLength / 2,
-   unitLength / 4, // ball is half the width of a cell //
+   unitLengthX / 2,
+   unitLengthY / 2,
+   ballRadius, 
    {
       label: 'ball'
    }
@@ -228,7 +239,12 @@ Events.on(engine, 'collisionStart', (e) => {
          labels.includes(collision.bodyA.label) && 
          labels.includes(collision.bodyB.label)
       )  {
-            console.log('User won!');
+         world.gravity.y = 1; // turns gravity on //
+         world.bodies.forEach((body) => {
+            if (body.label === 'wall'){
+               Body.setStatic(body, false);
+            }
+         });
       }
    });
 });
