@@ -1,7 +1,7 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-const cellsHorizontal = 14;
-const cellsVertical = 10;
+const cellsHorizontal = 6;
+const cellsVertical = 4;
 
 // using browser window object //
 const width = window.innerWidth;
@@ -22,7 +22,7 @@ const render = Render.create({
    element: document.body,
    engine: engine,
    options: {
-      wireframes: true, // makes shapes random solid color
+      wireframes: false,  
       width, // defined above
       height // defined above
    }
@@ -153,7 +153,10 @@ horizontals.forEach((row, rowIndex) => {
          5,
          {
             label: 'wall',
-            isStatic: true
+            isStatic: true,
+            render: {
+               fillStyle: 'red'
+            }
          }
       );
       World.add(world, wall);
@@ -174,7 +177,10 @@ verticals.forEach((row, rowIndex) => {
          unitLengthY,
          {
             label: 'wall', 
-            isStatic: true
+            isStatic: true,
+            render: {
+               fillStyle:'red'
+            }
          }
       );
       // add the segments to the canvas //
@@ -190,7 +196,11 @@ const goal = Bodies.rectangle(
    unitLengthY * .7,
    {
       label: 'goal',
-      isStatic: true
+      isStatic: true,
+      render: {
+         fillStyle: 'green'
+      }
+      
    }
 );
 // add to World/canvas //
@@ -204,7 +214,10 @@ const ball = Bodies.circle(
    unitLengthY / 2,
    ballRadius, 
    {
-      label: 'ball'
+      label: 'ball',
+      render: {
+         fillStyle: 'blue'
+      }
    }
 );
 // add ball to canvas
@@ -239,6 +252,7 @@ Events.on(engine, 'collisionStart', (e) => {
          labels.includes(collision.bodyA.label) && 
          labels.includes(collision.bodyB.label)
       )  {
+         document.querySelector('.winner').classList.remove('hidden');
          world.gravity.y = 1; // turns gravity on //
          world.bodies.forEach((body) => {
             if (body.label === 'wall'){
